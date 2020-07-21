@@ -5,9 +5,11 @@ import javax.validation.ConstraintValidatorContext;
 
 public class TcKimlikNoValidator implements ConstraintValidator<TcKimlikNo, String> {
 
+	@Override
 	public void initialize(TcKimlikNo constraint) {
 	}
 
+	@Override
 	public boolean isValid(String tcKimlikNo, ConstraintValidatorContext context) {
 		if (tcKimlikNo.length() != 11) {
 			return false;

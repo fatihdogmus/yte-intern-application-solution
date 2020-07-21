@@ -20,6 +20,14 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Validated
 @RequestMapping("/students")
+/*
+  @Validated annotation'ına girmeye vaktim olmadı. @Validated, spring'in sağladığı bir annotation ve @PathVariabl
+  ve @RequestParam gibi obje tabanlı olmayan, doğrudan controller fonksiyonu parametresine alınan argümanları validate etmek için
+  kullanılır. Fark ettiyseniz tüm @PathVariable'ların başında @Size gibi validation'lar koydum, bu path variable'lar ile
+  de yanlış input yollanmasının önüne geçmek için. Bunları @Valid ile yapamıyoruz arkadaşlar, @Valid spring için sadece
+  obje validation'larında çalışıyor, normal parametreleri validate etmiyor spring. Bunun için, class'ımızın başına @Validated
+  yazarak doğrudan obje olmayan argümanlarımızın validation'larını da sağlıyoruz.
+ */
 public class ManageStudentController {
 
 	private final ManageStudentService manageStudentService;
@@ -58,19 +66,19 @@ public class ManageStudentController {
 	}
 
 	@GetMapping("/{studentNumber}/books")
-	public List<BookDTO> getStudentsBooks(@PathVariable String studentNumber) {
+	public List<BookDTO> getStudentsBooks(@PathVariable @Size(max = 7, min = 7) String studentNumber) {
 		Set<Book> studentsBooks = manageStudentService.getStudentsBooks(studentNumber);
 		return bookMapper.mapToDto(new ArrayList<>(studentsBooks));
 	}
 
 	@PostMapping("/{studentNumber}/books")
-	public BookDTO addBookToStudent(@PathVariable String studentNumber, @RequestBody @Valid BookDTO bookDTO) {
+	public BookDTO addBookToStudent(@PathVariable @Size(max = 7, min = 7) String studentNumber, @RequestBody @Valid BookDTO bookDTO) {
 		Book addedBook = manageStudentService.addBookToStudent(studentNumber, bookMapper.mapToEntity(bookDTO));
 		return bookMapper.mapToDto(addedBook);
 	}
 
 	@DeleteMapping("/{studentNumber}/books/{bookTitle}")
-	public void addBookToStudent(@PathVariable String studentNumber, @PathVariable String bookTitle) {
+	public void addBookToStudent(@PathVariable @Size(max = 7, min = 7) String studentNumber, @PathVariable @Size(max = 1500, min = 100) String bookTitle) {
 		manageStudentService.deleteBook(studentNumber, bookTitle);
 	}
 

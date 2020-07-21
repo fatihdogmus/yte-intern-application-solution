@@ -28,10 +28,9 @@ public class Student extends BaseEntity {
 	@Column(name = "STUDENT_NUMBER", unique = true)
 	private String studentNumber;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "STUDENT_ID")
 	private Set<Book> books;
-
 
 	public boolean hasFiveBooks() {
 		return books.size() == 5;

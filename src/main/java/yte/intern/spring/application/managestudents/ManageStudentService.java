@@ -53,16 +53,28 @@ public class ManageStudentService {
 		studentRepository.deleteByStudentNumber(studentNumber);
 	}
 
+	/**
+	 * Burada bussiness rule'larımızı işletiyoruz. Eğer öğrencinin 5 kitabı varsa veya eklenmeye çalışılan kitap
+	 * zaten öğrencinin elinde varsa bir exception fırlatıyoruz(genellikle exception fırlatmak yerine özel bir error nesnesi
+	 * dönmek daha mantıklı, fakat aşırı karmaşık olacağı için şimdilik sadece exception fırlatmayı tercih ettim. Fakat
+	 * bazıları bussiness rule'ların oluşan hatalar için exception fırmatlamanın doğru olmadığını söylüyorlar, detaylı bir konu)
+	 * Burda service layer'ında bussiness rule'ların kontrolünü yapmak yerine, bu kontrolleri doğrudan entity'nin üzerine attım.
+	 * Bu da biraz daha advanced seviyede büyük uygulamalarda görebileceğiniz bir pratik. Mümkün olduğunca bussiness rule execution'larını
+	 * entity'lerin üzerine atmanın iyi olduğunu söylüyorlar. O yüzden burda if(student.getBooks().size == 5) gibi bir kod yerine doğrudan
+	 * student'a 5 kitabı olup olmadığını soruyorum.
+	 */
 	public Book addBookToStudent(String studentNumber, Book book) {
 		Optional<Student> studentOptional = studentRepository.findByStudentNumber(studentNumber);
 		if (studentOptional.isPresent()) {
 			Student student = studentOptional.get();
 			Set<Book> books = student.getBooks();
+
 			if (student.hasFiveBooks()) {
 				throw new IllegalStateException();
 			} else if (student.hasBook(book)) {
 				throw new IllegalStateException();
 			}
+
 			books.add(book);
 			Student savedStudent = studentRepository.save(student);
 			return savedStudent

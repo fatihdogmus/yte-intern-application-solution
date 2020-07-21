@@ -20,13 +20,13 @@ public class BookDTO {
 	@PastOrPresent(message = "Publish date can't be in the future!")
 	public final LocalDate publishDate;
 
-	@Min(value = 100,message = "Page count can be minimum 100!")
-	@Max(value = 1500,message = "Page count can be maximum 1500!")
+	@Min(value = 100, message = "Page count can be minimum 100!")
+	@Max(value = 1500, message = "Page count can be maximum 1500!")
 	public final Long pageCount;
 
 	public BookDTO(@JsonProperty("title") String title,
-	               @JsonProperty("publishDate") LocalDate publishDate,
-	               @JsonProperty("pageCount") Long pageCount) {
+				   @JsonProperty("publishDate") LocalDate publishDate,
+				   @JsonProperty("pageCount") Long pageCount) {
 		this.title = title;
 		this.publishDate = publishDate;
 		this.pageCount = pageCount;

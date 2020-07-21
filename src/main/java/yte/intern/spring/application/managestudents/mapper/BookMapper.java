@@ -1,13 +1,12 @@
 package yte.intern.spring.application.managestudents.mapper;
 
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import yte.intern.spring.application.managestudents.dto.BookDTO;
 import yte.intern.spring.application.managestudents.entity.Book;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring",injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring")
 public interface BookMapper {
 
 	BookDTO mapToDto(Book book);
