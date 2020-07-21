@@ -78,7 +78,7 @@ public class ManageStudentController {
 	}
 
 	@DeleteMapping("/{studentNumber}/books/{bookTitle}")
-	public void addBookToStudent(@PathVariable @Size(max = 7, min = 7) String studentNumber, @PathVariable @Size(max = 1500, min = 100) String bookTitle) {
+	public void addBookToStudent(@PathVariable @Size(max = 7, min = 7) String studentNumber, @PathVariable String bookTitle) {
 		manageStudentService.deleteBook(studentNumber, bookTitle);
 	}
 
