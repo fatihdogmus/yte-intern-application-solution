@@ -52,8 +52,9 @@ public class ManageStudentService {
 	public Student updateStudent(String studentNumber, Student student) {
 		Optional<Student> studentOptional = studentRepository.findByStudentNumber(studentNumber);
 		if (studentOptional.isPresent()) {
-			updateStudentFromDB(student, studentOptional.get());
-			return studentRepository.save(student);
+			Student studentFromDB = studentOptional.get();
+			updateStudentFromDB(student, studentFromDB);
+			return studentRepository.save(studentFromDB);
 		} else {
 			throw new EntityNotFoundException();
 		}
