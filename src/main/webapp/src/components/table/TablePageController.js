@@ -1,7 +1,7 @@
 import React from 'react';
 import TablePagination from "@material-ui/core/TablePagination";
 
-export function TablePageController(props) {
+export default function TablePageController(props) {
   return (
     <TablePagination
       rowsPerPageOptions={[10, 25, 100]}

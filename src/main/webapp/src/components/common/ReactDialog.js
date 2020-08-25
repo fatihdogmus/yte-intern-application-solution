@@ -16,9 +16,7 @@ class ReactDialog extends Component {
 
   handleInputChange = (event) => {
     event.persist();
-    console.log(event.target);
     this.setState(prevState => {
-      console.log(event.target)
       let inputData = {...prevState.inputData};
       inputData[event.target.id] = event.target.value;
       return {inputData};
@@ -33,8 +31,9 @@ class ReactDialog extends Component {
         <DialogContent>
           {this.props.fields.map(field => (
               <TextField
-                margin="dense" id={field.id} label={field.label} type={field.type} fullWidth
-                         onChange={this.handleInputChange}/>
+                margin="dense" id={field.id} key={field.id}
+                label={field.label} type={field.type} fullWidth
+                onChange={this.handleInputChange}/>
             )
           )}
 
