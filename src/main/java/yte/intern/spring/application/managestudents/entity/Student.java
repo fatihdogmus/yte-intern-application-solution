@@ -36,7 +36,7 @@ public class Student extends BaseEntity {
 		return books.size() == 5;
 	}
 
-	public boolean hasBook(Book book) {
-		return books.stream().anyMatch(it -> it.getTitle().equals(book.getTitle()));
+	public boolean hasBook(String bookTitle) {
+		return books.stream().anyMatch(it -> it.getTitle().equals(bookTitle));
 	}
 }

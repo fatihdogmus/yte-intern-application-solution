@@ -17,7 +17,6 @@ class App extends Component {
     {id: "studentNumber", label: "Student Number", type: "text"},
   ]
 
-
   constructor() {
     super();
     this.state = {

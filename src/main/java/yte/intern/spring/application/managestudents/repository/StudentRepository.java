@@ -18,6 +18,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 	 */
 	Optional<Student> findByStudentNumber(String studentNumber);
 
+	boolean existsByStudentNumber(String studentNumber);
+
 	@Transactional
 	void deleteByStudentNumber(String studentNumber);
 }

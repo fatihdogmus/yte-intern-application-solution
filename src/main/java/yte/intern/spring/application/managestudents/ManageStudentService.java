@@ -2,6 +2,7 @@ package yte.intern.spring.application.managestudents;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import yte.intern.spring.application.common.dto.MessageResponse;
 import yte.intern.spring.application.managestudents.entity.Book;
 import yte.intern.spring.application.managestudents.entity.Student;
 import yte.intern.spring.application.managestudents.repository.StudentRepository;
@@ -13,8 +14,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static yte.intern.spring.application.common.enums.MessageType.ERROR;
+import static yte.intern.spring.application.common.enums.MessageType.SUCCESS;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +37,10 @@ public class ManageStudentService {
 				.orElseThrow(EntityNotFoundException::new);
 	}
 
-	public Student addStudent(Student student) {
+	public MessageResponse addStudent(Student student) {
 		student.setBooks(Set.of(new Book("Introduction to Algorithms", LocalDate.parse("1989-01-01"), 1312L)));
-		return studentRepository.save(student);
+		studentRepository.save(student);
+		return new MessageResponse("Student has been added successfully!", SUCCESS);
 	}
 
 	/*
@@ -49,14 +52,15 @@ public class ManageStudentService {
 		gelen entity'i güncellemenin daha mantıklı olduğuna karar verdim.
 	 */
 	@Transactional
-	public Student updateStudent(String studentNumber, Student student) {
+	public MessageResponse updateStudent(String studentNumber, Student student) {
 		Optional<Student> studentOptional = studentRepository.findByStudentNumber(studentNumber);
 		if (studentOptional.isPresent()) {
 			Student studentFromDB = studentOptional.get();
 			updateStudentFromDB(student, studentFromDB);
-			return studentRepository.save(studentFromDB);
+			studentRepository.save(studentFromDB);
+			return new MessageResponse(String.format("Student with student number %s has been updated successfully!", studentNumber), SUCCESS);
 		} else {
-			throw new EntityNotFoundException();
+			return new MessageResponse(String.format("Student with student number %s can't be found!", studentNumber), ERROR);
 		}
 
 	}
@@ -68,8 +72,13 @@ public class ManageStudentService {
 		studentFromDB.setTcKimlikNo(student.getTcKimlikNo());
 	}
 
-	public void deleteStudent(String studentNumber) {
-		studentRepository.deleteByStudentNumber(studentNumber);
+	public MessageResponse deleteStudent(String studentNumber) {
+		if (studentRepository.existsByStudentNumber(studentNumber)) {
+			studentRepository.deleteByStudentNumber(studentNumber);
+			return new MessageResponse(String.format("Student with student number %s has been been deleted successfully!", studentNumber), SUCCESS);
+		} else {
+			return new MessageResponse(String.format("Student with student number %s can't be found!", studentNumber), ERROR);
+		}
 	}
 
 	/**
@@ -82,28 +91,23 @@ public class ManageStudentService {
 	 * entity'lerin üzerine atmanın iyi olduğunu söylüyorlar. O yüzden burda if(student.getBooks().size == 5) gibi bir kod yerine doğrudan
 	 * student'a 5 kitabı olup olmadığını soruyorum.
 	 */
-	public Book addBookToStudent(String studentNumber, Book book) {
+	public MessageResponse addBookToStudent(String studentNumber, Book book) {
 		Optional<Student> studentOptional = studentRepository.findByStudentNumber(studentNumber);
 		if (studentOptional.isPresent()) {
 			Student student = studentOptional.get();
 			Set<Book> books = student.getBooks();
 
 			if (student.hasFiveBooks()) {
-				throw new IllegalStateException();
-			} else if (student.hasBook(book)) {
-				throw new IllegalStateException();
+				return new MessageResponse(String.format("Student with student number %s has already 5 books!", studentNumber), ERROR);
+			} else if (student.hasBook(book.getTitle())) {
+				return new MessageResponse(String.format("Student with student number %s has already book %s", studentNumber, book.getTitle()), ERROR);
 			}
 
 			books.add(book);
-			Student savedStudent = studentRepository.save(student);
-			return savedStudent
-					.getBooks()
-					.stream()
-					.filter(it -> it.getTitle().equals(book.getTitle()))
-					.collect(toList())
-					.get(0);
+			return new MessageResponse(String.format("Book %s has been added to student successfylly!", book.getTitle()), ERROR);
+
 		} else {
-			throw new EntityNotFoundException();
+			return new MessageResponse(String.format("Student with student number %s can't be found!", studentNumber), ERROR);
 		}
 	}
 
@@ -113,14 +117,20 @@ public class ManageStudentService {
 		olarak seti temizleyip, filtre edilmiş seti student'ımızın book'larına ekleyip kaydediyoruz. Bu sayede hibernate hata
 		atmıyor, bizde istediğimiz elemanı setten çıkarmış oluyoruz.
 	 */
-	public void deleteBook(String studentNumber, String bookTitle) {
+	public MessageResponse deleteBook(String studentNumber, String bookTitle) {
 		Optional<Student> studentOptional = studentRepository.findByStudentNumber(studentNumber);
-		if(studentOptional.isPresent()) {
+		if (studentOptional.isPresent()) {
 			Student student = studentOptional.get();
+			if(!student.hasBook(bookTitle)) {
+				return new MessageResponse(String.format("Student with student number %s doesn't have book %s!", studentNumber, bookTitle),ERROR);
+			}
 			removeBookFromStudent(bookTitle, student);
 			studentRepository.save(student);
+			return new MessageResponse(String.format("Book %s has been deleted from student successfylly!", bookTitle), SUCCESS);
 		}
+		return new MessageResponse(String.format("Student with student number %s can't be found!", studentNumber), ERROR);
 	}
+
 
 	private void removeBookFromStudent(String bookTitle, Student student) {
 		Set<Book> filteredBooks = student.getBooks()

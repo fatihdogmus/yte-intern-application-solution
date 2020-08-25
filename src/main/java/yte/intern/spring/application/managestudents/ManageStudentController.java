@@ -3,6 +3,7 @@ package yte.intern.spring.application.managestudents;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import yte.intern.spring.application.common.dto.MessageResponse;
 import yte.intern.spring.application.managestudents.dto.BookDTO;
 import yte.intern.spring.application.managestudents.dto.StudentDTO;
 import yte.intern.spring.application.managestudents.entity.Book;
@@ -47,22 +48,20 @@ public class ManageStudentController {
 	}
 
 	@PostMapping
-	public StudentDTO addStudent(@Valid @RequestBody StudentDTO studentDTO) {
+	public MessageResponse addStudent(@Valid @RequestBody StudentDTO studentDTO) {
 		Student student = studentMapper.mapToEntity(studentDTO);
-		Student addedStudent = manageStudentService.addStudent(student);
-		return studentMapper.mapToDto(addedStudent);
+		return manageStudentService.addStudent(student);
 	}
 
 	@PutMapping("/{studentNumber}")
-	public StudentDTO updateStudent(@PathVariable @Size(max = 7, min = 7) String studentNumber, @Valid @RequestBody StudentDTO studentDTO) {
+	public MessageResponse updateStudent(@PathVariable @Size(max = 7, min = 7) String studentNumber, @Valid @RequestBody StudentDTO studentDTO) {
 		Student student = studentMapper.mapToEntity(studentDTO);
-		Student updatedStudent = manageStudentService.updateStudent(studentNumber, student);
-		return studentMapper.mapToDto(updatedStudent);
+		return manageStudentService.updateStudent(studentNumber, student);
 	}
 
 	@DeleteMapping("/{studentNumber}")
-	public void deleteStudent(@PathVariable @Size(max = 7, min = 7) String studentNumber) {
-		manageStudentService.deleteStudent(studentNumber);
+	public MessageResponse deleteStudent(@PathVariable @Size(max = 7, min = 7) String studentNumber) {
+		return manageStudentService.deleteStudent(studentNumber);
 	}
 
 	@GetMapping("/{studentNumber}/books")
@@ -72,14 +71,12 @@ public class ManageStudentController {
 	}
 
 	@PostMapping("/{studentNumber}/books")
-	public BookDTO addBookToStudent(@PathVariable @Size(max = 7, min = 7) String studentNumber, @RequestBody @Valid BookDTO bookDTO) {
-		Book addedBook = manageStudentService.addBookToStudent(studentNumber, bookMapper.mapToEntity(bookDTO));
-		return bookMapper.mapToDto(addedBook);
+	public MessageResponse addBookToStudent(@PathVariable @Size(max = 7, min = 7) String studentNumber, @RequestBody @Valid BookDTO bookDTO) {
+		return manageStudentService.addBookToStudent(studentNumber, bookMapper.mapToEntity(bookDTO));
 	}
 
 	@DeleteMapping("/{studentNumber}/books/{bookTitle}")
-	public void addBookToStudent(@PathVariable @Size(max = 7, min = 7) String studentNumber, @PathVariable String bookTitle) {
-		manageStudentService.deleteBook(studentNumber, bookTitle);
+	public MessageResponse addBookToStudent(@PathVariable @Size(max = 7, min = 7) String studentNumber, @PathVariable String bookTitle) {
+		return manageStudentService.deleteBook(studentNumber, bookTitle);
 	}
-
 }

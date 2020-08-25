@@ -3,13 +3,11 @@ package yte.intern.spring.application.managestudents.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
-import lombok.Getter;
 import yte.intern.spring.application.managestudents.validation.TcKimlikNo;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
-@Getter
 @Builder
 public class StudentDTO {
 
