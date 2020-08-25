@@ -46,7 +46,7 @@ class App extends Component {
     axios.post("/students", inputData)
       .then(response => {
         this.setState(prevState => (
-          {rows: [...prevState.rows, response.data]}
+          {rows: [...prevState.rows, inputData]}
           ));
         this.snackbarOpen("Student has been added successfully!", "success");
       })

@@ -31,12 +31,12 @@ class ReactDialog extends Component {
       <Dialog open={this.props.isOpen} onClose={this.props.onClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">{this.props.title}</DialogTitle>
         <DialogContent>
-          {this.props.fields.map(field => {
-            return (
-              <TextField margin="dense" id={field.id} label={field.label} type={field.type}
+          {this.props.fields.map(field => (
+              <TextField
+                margin="dense" id={field.id} label={field.label} type={field.type} fullWidth
                          onChange={this.handleInputChange}/>
-            );
-          })}
+            )
+          )}
 
         </DialogContent>
         <DialogActions>
