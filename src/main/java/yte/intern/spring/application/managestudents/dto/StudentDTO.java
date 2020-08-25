@@ -11,20 +11,25 @@ import javax.validation.constraints.Size;
 @Builder
 public class StudentDTO {
 
+	@JsonProperty("name")
 	@Size(max = 255, message = "Name can't be longer than 255!")
 	public final String name;
 
+	@JsonProperty("surname")
 	@Size(max = 255, message = "Surname can't be longer than 255!")
 	public final String surname;
 
+	@JsonProperty("email")
 	@Email(message = "Please enter a valid e-mail address!")
 	@Size(max = 255, message = "E-mail can't be longer than 255!")
 	public final String email;
 
+	@JsonProperty("tcKimlikNo")
 	@Size(min = 11, max = 11, message = "TC Kimlik no must be 11 characters long!")
 	@TcKimlikNo(message = "TC Kimlik No must be valid!")
 	public final String tcKimlikNo;
 
+	@JsonProperty("studentNumber")
 	@Size(min = 7, max = 7, message = "Student number must be 7 characters long!")
 	public final String studentNumber;
 

@@ -11,7 +11,8 @@ public class TcKimlikNoValidator implements ConstraintValidator<TcKimlikNo, Stri
 
 	@Override
 	public boolean isValid(String tcKimlikNo, ConstraintValidatorContext context) {
-		if (tcKimlikNo.length() != 11) {
+
+		if (tcKimlikNo == null || tcKimlikNo.length() != 11) {
 			return false;
 		}
 

@@ -12,12 +12,15 @@ import java.time.LocalDate;
 @Builder
 public class BookDTO {
 
+	@JsonProperty("title")
 	@Size(max = 255, message = "Title can be at most 255 characters!")
 	public final String title;
 
+	@JsonProperty("publishDate")
 	@PastOrPresent(message = "Publish date can't be in the future!")
 	public final LocalDate publishDate;
 
+	@JsonProperty("pageCount")
 	@Min(value = 100, message = "Page count can be minimum 100!")
 	@Max(value = 1500, message = "Page count can be maximum 1500!")
 	public final Long pageCount;

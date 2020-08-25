@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import PaginationTable from "./components/table/PaginationTable";
 import Button from "@material-ui/core/Button";
 import PlusIcon from '@material-ui/icons/Add';
@@ -7,9 +7,9 @@ import ReactDialog from "./components/common/ReactDialog";
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-class App extends Component {
+export default function App(props) {
 
-  studentDialogFields = [
+  const studentDialogFields = [
     {id: "name", label: "Name", type: "text"},
     {id: "surname", label: "Surname", type: "text"},
     {id: "email", label: "E-Mail", type: "email"},
@@ -17,15 +17,10 @@ class App extends Component {
     {id: "studentNumber", label: "Student Number", type: "text"},
   ]
 
-  constructor() {
-    super();
-    this.state = {
-      rows: [],
-      addStudentModalOpen: false,
-    }
-  }
+  const [rows, updateRows] = useState([]);
+  const [isAddStudentModalOpen, updateIsAddStudentModalOpen] = useState(false);
 
-  toastOptions = {
+  const toastOptions = {
     position: "top-right",
     autoClose: 5000,
     hideProgressBar: true,
@@ -35,82 +30,75 @@ class App extends Component {
     progress: undefined,
   };
 
-  componentDidMount() {
+  useEffect(() => {
     axios.get("/students")
       .then(response => {
-        this.setState({rows: response.data})
+        updateRows(response.data)
       })
+  }, [])
+
+
+  const toggleAddStudentModal = () => {
+    updateIsAddStudentModalOpen(!isAddStudentModalOpen);
   }
 
-  toggleAddStudentModal = () => {
-    this.setState({addStudentModalOpen: !this.state.addStudentModalOpen})
-  }
-
-  submitStudentAdd = (inputData) => {
-    this.toggleAddStudentModal();
+  const submitStudentAdd = (inputData) => {
+    toggleAddStudentModal();
     axios.post("/students", inputData)
       .then(response => {
         console.log(response.data);
         if (response.data.messageType === "SUCCESS") {
-          toast.success(response.data.message, this.toastOptions);
-          this.setState(prevState => ({rows: [...prevState.rows, inputData]}));
+          toast.success(response.data.message, toastOptions);
+          updateRows([...rows, inputData]);
         } else {
-          toast.error(response.data.message, this.toastOptions);
+          toast.error(response.data.message, toastOptions);
         }
       });
   }
 
-  onStudentDelete = (studentNumber) => {
+  const onStudentDelete = (studentNumber) => {
     axios.delete("/students/" + studentNumber)
       .then(response => {
         if (response.data.messageType === "SUCCESS") {
-          this.setState({
-            rows: this.state.rows.filter((student) => student.studentNumber !== studentNumber)
-          })
-          toast.success(response.data.message, this.toastOptions);
+          updateRows(rows.filter((student) => student.studentNumber !== studentNumber));
+          toast.success(response.data.message, toastOptions);
         } else {
-          toast.error(response.data.message, this.toastOptions);
+          toast.error(response.data.message, toastOptions);
         }
       })
   }
 
-  onAddBook = (inputData) => {
+  const onAddBook = (inputData) => {
     console.log(inputData);
-    //Burada
+    //Burada Book eklemek için bir modal açıp student'a benzer bir mantık yapılmalı, fakat burayı yapmak için vaktim olmadı
   }
 
-  studentTableColumns = [
+  const studentTableColumns = [
     {id: 'name', label: 'Name', minWidth: 170},
     {id: 'surname', label: 'Surname', minWidth: 100},
     {id: 'email', label: 'E-Mail', minWidth: 170, align: 'right',},
     {id: 'tcKimlikNo', label: 'TC Kimlik No', minWidth: 170, align: 'right',},
     {id: 'studentNumber', label: 'Student Number', minWidth: 170, align: 'right',},
-    {id: "update", label: "Update Student", align: "right", onClick: this.onStudentDelete},
-    {id: "delete", label: "Delete Student", align: "right", onClick: this.onStudentDelete},
-    {id: "addBook", label: "Add Book", align: "right", onClick: this.onAddBook}
+    {id: "update", label: "Update Student", align: "right", onClick: onStudentDelete},
+    {id: "delete", label: "Delete Student", align: "right", onClick: onStudentDelete},
+    {id: "addBook", label: "Add Book", align: "right", onClick: onAddBook}
   ];
 
-  render() {
-
-    return (
-      <div className="App">
-        <Button variant="contained"
-                color="primary"
-                style={{float: "right"}}
-                onClick={this.toggleAddStudentModal}
-                startIcon={<PlusIcon/>}>
-          Add student
-        </Button>
-        <ReactDialog fields={this.studentDialogFields} title="Add Student" isOpen={this.state.addStudentModalOpen}
-                     onClose={this.toggleAddStudentModal}
-                     onSubmit={this.submitStudentAdd}/>
-        <PaginationTable rows={this.state.rows} columns={this.studentTableColumns}/>
-        <ToastContainer/>
-      </div>
-    );
-  }
-
+  return (
+    <div className="App">
+      <Button variant="contained"
+              color="primary"
+              style={{float: "right"}}
+              onClick={toggleAddStudentModal}
+              startIcon={<PlusIcon/>}>
+        Add student
+      </Button>
+      <ReactDialog fields={studentDialogFields} title="Add Student" isOpen={isAddStudentModalOpen}
+                   onClose={toggleAddStudentModal}
+                   onSubmit={submitStudentAdd}/>
+      <PaginationTable rows={rows} columns={studentTableColumns}/>
+      <ToastContainer/>
+    </div>
+  );
 
 }
-
-export default App;
